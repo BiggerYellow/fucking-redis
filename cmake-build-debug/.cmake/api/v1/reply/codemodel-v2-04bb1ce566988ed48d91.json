@@ -1,0 +1,232 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1,
+						5
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Debug-2c531de82751932f4dd5.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.0"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						7,
+						8
+					]
+				},
+				{
+					"build" : "deps",
+					"childIndexes" : 
+					[
+						2,
+						3,
+						4
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-deps-Debug-9809b3fc864cc8f91ec2.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.0"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "deps"
+				},
+				{
+					"build" : "deps/hiredis",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-deps.hiredis-Debug-a3bbcd973db695d5919e.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.4.0"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 1,
+					"source" : "deps/hiredis",
+					"targetIndexes" : 
+					[
+						3,
+						4
+					]
+				},
+				{
+					"build" : "deps/linenoise",
+					"jsonFile" : "directory-deps.linenoise-Debug-71f22b96308b55557585.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.0"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 0,
+					"source" : "deps/linenoise",
+					"targetIndexes" : 
+					[
+						5
+					]
+				},
+				{
+					"build" : "deps/lua",
+					"jsonFile" : "directory-deps.lua-Debug-e32167bf4fa066a55f1e.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.0"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 0,
+					"source" : "deps/lua",
+					"targetIndexes" : 
+					[
+						6
+					]
+				},
+				{
+					"build" : "src/modules",
+					"jsonFile" : "directory-src.modules-Debug-767fa642459ae0b067b3.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.9"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "src/modules",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1
+					],
+					"directoryIndexes" : 
+					[
+						0,
+						1,
+						3,
+						4,
+						5
+					],
+					"name" : "redis",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						5,
+						6,
+						7,
+						8
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						2
+					],
+					"name" : "hiredis",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						3,
+						4
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 5,
+					"id" : "helloblock::@e5f2f2a1f21f4df3a143",
+					"jsonFile" : "target-helloblock-Debug-79a86b9bb7be8ef219d7.json",
+					"name" : "helloblock",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "hellotype::@e5f2f2a1f21f4df3a143",
+					"jsonFile" : "target-hellotype-Debug-d220feb330e104373cf9.json",
+					"name" : "hellotype",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "helloworld::@e5f2f2a1f21f4df3a143",
+					"jsonFile" : "target-helloworld-Debug-9b872d867a14ec2ab26a.json",
+					"name" : "helloworld",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "hiredis::@8aee188d977b3356ca55",
+					"jsonFile" : "target-hiredis-Debug-dff320249eb395c14ce5.json",
+					"name" : "hiredis",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "hiredis-test::@8aee188d977b3356ca55",
+					"jsonFile" : "target-hiredis-test-Debug-cd1eeec9c855f7e276f3.json",
+					"name" : "hiredis-test",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "linenoise::@eb5190127594ef08c6af",
+					"jsonFile" : "target-linenoise-Debug-1d6b4c2e551763913315.json",
+					"name" : "linenoise",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "lua::@67e70dc13aa9e25c27cd",
+					"jsonFile" : "target-lua-Debug-448710c501bcda94854e.json",
+					"name" : "lua",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "redis-cli::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-redis-cli-Debug-f78a6c6690a5c2f51b02.json",
+					"name" : "redis-cli",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "redis-server::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-redis-server-Debug-1943ccc64f6a66b79168.json",
+					"name" : "redis-server",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/cygdrive/d/workspace/github/fucking-redis/cmake-build-debug",
+		"source" : "/cygdrive/d/workspace/github/fucking-redis"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 4
+	}
+}

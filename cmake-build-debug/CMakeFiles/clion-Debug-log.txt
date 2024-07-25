@@ -1,0 +1,12 @@
+D:\appserver\cygwin64\bin\cmake.exe -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/usr/bin/make.exe -DCMAKE_C_COMPILER=/usr/bin/gcc.exe -DCMAKE_CXX_COMPILER=/usr/bin/g++.exe -G "CodeBlocks - Unix Makefiles" -S /cygdrive/d/workspace/github/fucking-redis -B /cygdrive/d/workspace/github/fucking-redis/cmake-build-debug
+CMAKE_RUNTIME_OUTPUT_DIRECTORYis:/cygdrive/d/workspace/github/fucking-redis/cmake-build-debug/../src
+-- No build type defined; defaulting to 'Debug'
+-- Host is: CYGWIN-3.5.3-1.x86_64. Build target is:
+CYGWIN-3.5.3-1.x86_64
+-- Project root directory is: /cygdrive/d/workspace/github/fucking-redis
+-- Generating release.h...
+#define REDIS_GIT_SHA1 "71fb0a3c"
+Detected version: 1.0.0
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /cygdrive/d/workspace/github/fucking-redis/cmake-build-debug

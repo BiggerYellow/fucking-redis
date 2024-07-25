@@ -1,0 +1,1 @@
+/usr/bin/gcc.exe -g -shared -Wl,--enable-auto-import -o ../../../src/helloworld.so -Wl,--out-implib,libhelloworld.dll.a -Wl,--major-image-version,0,--minor-image-version,0 CMakeFiles/helloworld.dir/helloworld.c.o 
