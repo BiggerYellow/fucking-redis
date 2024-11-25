@@ -42,7 +42,18 @@
  * container: 2 bits, NONE=1, ZIPLIST=2.
  * recompress: 1 bit, bool, true if node is temporary decompressed for usage.
  * attempted_compress: 1 bit, boolean, used for verifying during testing.
- * extra: 10 bits, free for future use; pads out the remainder of 32 bits */
+ * extra: 10 bits, free for future use; pads out the remainder of 32 bits
+ *
+ * quicklistNode 是一个32字节的结构体，描述quickList的压缩列表。
+ * 我们使用位字段将 quicklistNode 控制在 32 字节
+ * count: 16位，最大 65536 （最终字节数为 65k，所以最大计数实际小于 32k）
+ * encoding: 2位， 原始为1，使用LZF压缩算法为 2
+ * container: 2位， 每个链表节点所持有的数据类型是什么，默认的实现是 ziplist，对应的值为2
+ * quicklistNode: 1位，如果节点临时解压缩以供使用，则为true
+ * attempted_compress: 1位，用于测试时的验证
+ * extra:10位，免费供将来使用，补出32位的剩余部分
+ *
+ * */
 typedef struct quicklistNode {
     struct quicklistNode *prev;
     struct quicklistNode *next;
@@ -60,7 +71,13 @@ typedef struct quicklistNode {
  * 'sz' is byte length of 'compressed' field.
  * 'compressed' is LZF data with total (compressed) length 'sz'
  * NOTE: uncompressed length is stored in quicklistNode->sz.
- * When quicklistNode->zl is compressed, node->zl points to a quicklistLZF */
+ * When quicklistNode->zl is compressed, node->zl points to a quicklistLZF
+ * quicklistLZF 是一个 4+N 字节的结构体，包含 sz 后面跟着 compressed。
+ * sz 是 compressed 字段的长度。
+ * compressed 是总长度为 sz 的LZF数据
+ * 请注意：非压缩的长度存储在 quicklistNode 的 sz 字段中。
+ * 当 quicklistNode 的 zl 是压缩的， 节点的 zl 字段指向 quicklistLZF
+ * */
 typedef struct quicklistLZF {
     unsigned int sz; /* LZF size in bytes*/
     char compressed[];
@@ -73,7 +90,12 @@ typedef struct quicklistLZF {
  * When not used, they don't add any memory overhead, but when used and then
  * deleted, some overhead remains (to avoid resonance).
  * The number of bookmarks used should be kept to minimum since it also adds
- * overhead on node deletion (searching for a bookmark to update). */
+ * overhead on node deletion (searching for a bookmark to update).
+ * 书签在快速列表结构体的末尾使用 realloc 填充。
+ * 它们只应该用于非常大的列表，如果有数千个节点，多余的内存使用可以忽略不计，并且确实需要对它们就行部分迭代。
+ * 当不使用它们时，它们不会增加任何内存开销，但是当使用并删除它们时，会保留一些开心。
+ * 使用的书签数量应该保持在最低限度，因为它也会增加删除节点时的开销。
+ * */
 typedef struct quicklistBookmark {
     quicklistNode *node;
     char *name;
@@ -101,7 +123,27 @@ typedef struct quicklistBookmark {
  *                of quicklistNodes to leave uncompressed at ends of quicklist.
  * 'fill' is the user-requested (or default) fill factor.
  * 'bookmakrs are an optional feature that is used by realloc this struct,
- *      so that they don't consume memory when not used. */
+ *      so that they don't consume memory when not used.
+ *  quicklist 是一个 40 字节的结构体，描述一个快速列表
+ *  count: 表示 ziplist 节点的总数量
+ *  len: 表示 quicklist 节点的总数量
+ *  compress: 如果关闭压缩则为0， 否则用来表示在 quicklist 的末尾保留未压缩的 quicklistNode 的数量  对应配置:list-compress-depth
+ *  0-是个特殊值，表示不压缩。是Redis的默认值
+ *  1-表示quicklist两端各有 1 个节点不压缩，中间的节点压缩
+ *  2-表示quicklist两端各有 2 个节点不压缩，中间的节点压缩
+ *  3-表示quicklist两端各有 3 个节点不压缩，中间的节点压缩
+ *  以此类推
+ *
+ *  fill: ziplist 的大小设置  对应配置:list-max-ziplist-size
+ *  当取正值的时候，表示按照数据项个数来限定每个 quicklist 节点上的 ziplist 长度。比如，当这个参数设置成 5 时，表示每个 quicklist 节点的 ziplist 最多包含 5 个数据项
+ *  当取负值的时候，表示按照占用字节数来限定每个 quicklist 节点上的 ziplist 长度。这时，它只能取 -1 到 -5 这五个值，每个值含义如下：
+ *  -1:每个 quicklist 节点上的 ziplist 大小不能超过 4kb
+ *  -2:每个 quicklist 节点上的 ziplist 大小不能超过 8kb (Redis 给的默认值)
+ *  -3:每个 quicklist 节点上的 ziplist 大小不能超过 16kb
+ *  -4:每个 quicklist 节点上的 ziplist 大小不能超过 32kb
+ *  -5:每个 quicklist 节点上的 ziplist 大小不能超过 64kb
+ *  bookmakrs: 是 realloc 这个结构体使用的一个可选特性，这样他们在不使用时就不会消耗内存
+ *      */
 typedef struct quicklist {
     quicklistNode *head;
     quicklistNode *tail;
