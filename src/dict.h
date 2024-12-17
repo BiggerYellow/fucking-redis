@@ -48,53 +48,89 @@
 #define DICT_NOTUSED(V) ((void) V)
 
 typedef struct dictEntry {
+    //对应的键
     void *key;
+    //对应的值 可以是一个指针，也可以是数字类型
     union {
         void *val;
         uint64_t u64;
         int64_t s64;
         double d;
     } v;
+    //指向下一个哈希表节点，形成链表
     struct dictEntry *next;
 } dictEntry;
 
+//dictType 实际上就是哈希算法
 typedef struct dictType {
+    //hash 方法，根据 key 计算哈希值
     uint64_t (*hashFunction)(const void *key);
+    //复制 key
     void *(*keyDup)(void *privdata, const void *key);
+    //复制 value
     void *(*valDup)(void *privdata, const void *obj);
+    //key 比较
     int (*keyCompare)(void *privdata, const void *key1, const void *key2);
+    //销毁 key
     void (*keyDestructor)(void *privdata, void *key);
+    //销毁 value
     void (*valDestructor)(void *privdata, void *obj);
+    //允许扩容
     int (*expandAllowed)(size_t moreMem, double usedRatio);
 } dictType;
 
 /* This is our hash table structure. Every dictionary has two of this as we
- * implement incremental rehashing, for the old to the new table. */
+ * implement incremental rehashing, for the old to the new table.
+ * 这是我们的哈希表结构。
+ * 当我们实现增量渐进式哈希时，每个字典都有两个这样的表，将旧表放到新表中。
+ * */
 typedef struct dictht {
+    //哈希表数组
     dictEntry **table;
+    //哈希表大小
     unsigned long size;
+    //哈希表大小掩码，用于计算索引值
+    //总是等于 size-1
     unsigned long sizemask;
+    //该哈希表已有节点的数量
     unsigned long used;
 } dictht;
 
 typedef struct dict {
+    //哈希算法
     dictType *type;
+    //私有数据，用于不同类型的哈希算法的参数
     void *privdata;
+    //两个哈希表，用两个的原因是 rehash 扩容缩容使用
     dictht ht[2];
+    // rehash 进行到的索引值，当没有在 rehash 的时候，值为-1
     long rehashidx; /* rehashing not in progress if rehashidx == -1 */
+    //rehash 暂停标志，如果大于 0 代表 rehash 暂停
     int16_t pauserehash; /* If >0 rehashing is paused (<0 indicates coding error) */
 } dict;
 
 /* If safe is set to 1 this is a safe iterator, that means, you can call
  * dictAdd, dictFind, and other functions against the dictionary even while
  * iterating. Otherwise it is a non safe iterator, and only dictNext()
- * should be called while iterating. */
+ * should be called while iterating.
+ * 字典迭代器
+ * 如果 safe 属性的值为1，那么在迭代进行的过程中，程序仍然可以执行 dictAdd，dictFind 和其他函数对字典进行修改。
+ * 如果 safe 不为1，那么程序只会调用 dictNext 对字典进行迭代，而不对字典进行修改
+ * */
 typedef struct dictIterator {
+    //被迭代的字典
     dict *d;
+    //正在被迭代的哈希表的索引
     long index;
+    //正在被迭代的哈希表
+    //当前迭代器是否安全
     int table, safe;
+    //当前迭代到的节点指针
+    //当前迭代节点的下一个节点（因为迭代器运作时，当前节点可能会被修改，必须保存下一个节点位置，避免指针丢失）
     dictEntry *entry, *nextEntry;
-    /* unsafe iterator fingerprint for misuse detection. */
+    /* unsafe iterator fingerprint for misuse detection.
+     * 不安全迭代器，正在更新中的表的迭代器，使用指纹来标记
+     * */
     unsigned long long fingerprint;
 } dictIterator;
 
