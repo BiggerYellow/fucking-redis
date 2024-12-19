@@ -33,8 +33,11 @@
 #include <stdint.h>
 
 typedef struct intset {
+    // 整数编码方式  取值有三个 INTSET_ENC_INT16、INTSET_ENC_INT32、INTSET_ENC_INT64  占4字节
     uint32_t encoding;
+    // 代表存储的整数个数    占4字节
     uint32_t length;
+    // 指向实际存储数值的连续内存区域，是一个数组；整数集合的每个元素都是contents数组的一个数组项（item），各个项在数组中按值大小从小到大有序排序，且数组中不包含任何重复项     占1字节
     int8_t contents[];
 } intset;
 
