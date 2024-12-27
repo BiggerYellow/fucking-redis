@@ -384,7 +384,9 @@ typedef enum {
 /* Anti-warning macro... */
 #define UNUSED(V) ((void) V)
 
+//层高最大值限制   32
 #define ZSKIPLIST_MAXLEVEL 32 /* Should be enough for 2^64 elements */
+//层高是否继续增长的概率
 #define ZSKIPLIST_P 0.25      /* Skiplist P = 1/4 */
 
 /* Append only defines */
@@ -1004,25 +1006,42 @@ struct sharedObjectsStruct {
     sds minstring, maxstring;
 };
 
-/* ZSETs use a specialized version of Skiplists */
+/* ZSETs use a specialized version of Skiplists
+ * ZSET 使用特殊版本的快表
+ * */
+//跳表节点定义
 typedef struct zskiplistNode {
+    //存储的内容
     sds ele;
+    //对应的分值  用于排序
     double score;
+    //前置指针
     struct zskiplistNode *backward;
+    //变长数组 记录层信息，层级越高跳过的节点越多（因为层高越高概率越低）
     struct zskiplistLevel {
+        //执行当前层的下一个节点
         struct zskiplistNode *forward;
+        //当前节点 与 forward 所指节点间隔的节点数
         unsigned long span;
     } level[];
 } zskiplistNode;
 
+//跳表数据结构
 typedef struct zskiplist {
+    //头尾节点
     struct zskiplistNode *header, *tail;
+    //长度
     unsigned long length;
+    //最大层级
     int level;
 } zskiplist;
 
+
+//有序集合数据结构
 typedef struct zset {
+    //字典 当元素较少时使用字典作为底层结构，适用于直接查询
     dict *dict;
+    //跳表 适用于范围查询
     zskiplist *zsl;
 } zset;
 
@@ -2178,6 +2197,7 @@ typedef struct {
     int minex, maxex; /* are min or max exclusive? */
 } zlexrangespec;
 
+//有序集合相关API
 zskiplist *zslCreate(void);
 void zslFree(zskiplist *zsl);
 zskiplistNode *zslInsert(zskiplist *zsl, double score, sds ele);

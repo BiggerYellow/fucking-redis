@@ -595,7 +595,7 @@ unsigned int zipStorePrevEntryLength(unsigned char *p, unsigned int len) {
 
 /* Return the number of bytes used to encode the length of the previous
  * entry. The length is returned by setting the var 'prevlensize'.
- * 返回用于编码上一个节点长度的字节数。 通过设置变量 prevlensize 来返回长度
+ * 返回用于解码上一个节点长度的字节数。 通过设置变量 prevlensize 来返回长度
  */
 #define ZIP_DECODE_PREVLENSIZE(ptr, prevlensize) do {                          \
     /*若指针的第一个元素小于ZIP_BIG_PREVLEN 代表 prevlensize 为 1字节，否则为 5 字节*/  \
@@ -1493,37 +1493,57 @@ unsigned char *ziplistPush(unsigned char *zl, unsigned char *s, unsigned int sle
 
 /* Returns an offset to use for iterating with ziplistNext. When the given
  * index is negative, the list is traversed back to front. When the list
- * doesn't contain an element at the provided index, NULL is returned. */
+ * doesn't contain an element at the provided index, NULL is returned.
+ * 返回用于迭代 ziplistNext 的偏移量。
+ * 当给定的位置为负数时，列表从后往前遍历。
+ * 如果列表在提供的索引处不包含任意元素，返回 null
+ * */
 unsigned char *ziplistIndex(unsigned char *zl, int index) {
+    //待处理的指针位置
     unsigned char *p;
     unsigned int prevlensize, prevlen = 0;
+    //计算当前压缩列表的大小
     size_t zlbytes = intrev32ifbe(ZIPLIST_BYTES(zl));
+    //若index小于0，需要从后往前遍历
     if (index < 0) {
+        //索引位置取反
         index = (-index)-1;
+        //指针指向压缩列表末尾
         p = ZIPLIST_ENTRY_TAIL(zl);
+        //若压缩列表存在元素
         if (p[0] != ZIP_END) {
             /* No need for "safe" check: when going backwards, we know the header
              * we're parsing is in the range, we just need to assert (below) that
              * the size we take doesn't cause p to go outside the allocation. */
+            //解码上一个节点的长度
             ZIP_DECODE_PREVLENSIZE(p, prevlensize);
             assert(p + prevlensize < zl + zlbytes - ZIPLIST_END_SIZE);
+            //解码上一个节点需要的字节数
             ZIP_DECODE_PREVLEN(p, prevlensize, prevlen);
+            //若存在节点 且 索引未遍历完
             while (prevlen > 0 && index--) {
+                //减去对应字节数  指继续从上一个位置开始继续
                 p -= prevlen;
                 assert(p >= zl + ZIPLIST_HEADER_SIZE && p < zl + zlbytes - ZIPLIST_END_SIZE);
+                //再次解码上上个位置的字节数
                 ZIP_DECODE_PREVLEN(p, prevlensize, prevlen);
             }
         }
     } else {
+        //指针指向头部
         p = ZIPLIST_ENTRY_HEAD(zl);
+        //迭代处理索引位置
         while (index--) {
             /* Use the "safe" length: When we go forward, we need to be careful
              * not to decode an entry header if it's past the ziplist allocation. */
+            //顺序遍历 累加每一个节点的字节数
             p += zipRawEntryLengthSafe(zl, zlbytes, p);
+            //若到末尾截止
             if (p[0] == ZIP_END)
                 break;
         }
     }
+    //若压缩列表指针末尾 或 索引未遍历完 直接返回null
     if (p[0] == ZIP_END || index > 0)
         return NULL;
     zipAssertValidEntry(zl, zlbytes, p);
